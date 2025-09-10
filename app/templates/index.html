@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloodClan - Blood Donation Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Enhanced BloodClan Styles */
+        :root {
+            --primary: #e63946;
+            --primary-dark: #c1121f;
+            --secondary: #457b9d;
+            --light: #f1faee;
+            --dark: #1d3557;
+            --accent: #a8dadc;
+            --success: #2a9d8f;
+            --warning: #e9c46a;
+            --danger: #e76f51;
+            --gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* Navigation */
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,128L48,117.3C96,107,192,85,288,112C384,139,480,213,576,218.7C672,224,768,160,864,138.7C960,117,1056,139,1152,149.3C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: bottom;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            font-weight: 600;
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.6rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #a50a14 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #1d7870 100%);
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #1d7870 0%, #16665e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 157, 143, 0.4);
+        }
+
+        /* Feature Icons */
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, #8ecae6 100%);
+            color: var(--dark);
+            font-size: 1.8rem;
+        }
+
+        /* Forms */
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(230, 57, 70, 0.25);
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+            cursor: pointer;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background-color: rgba(230, 57, 70, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Blood Group Badges */
+        .blood-badge {
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--dark) 0%, #14213d 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 2rem 1rem;
+                text-align: center;
+            }
+            
+            .display-4 {
+                font-size: 2.2rem;
+            }
+            
+            .card {
+                margin-bottom: 1.5rem;
+            }
+            
+            .upload-area {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Utility Classes */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .bg-light-custom {
+            background-color: var(--gray);
+        }
+
+        /* Blood Group Specific Colors */
+        .blood-a-plus { background-color: #ff6b6b; color: white; }
+        .blood-a-minus { background-color: #ff8e8e; color: white; }
+        .blood-b-plus { background-color: #4ecdc4; color: white; }
+        .blood-b-minus { background-color: #6dd5db; color: white; }
+        .blood-ab-plus { background-color: #45b7d1; color: white; }
+        .blood-ab-minus { background-color: #74c0fc; color: white; }
+        .blood-o-plus { background-color: #ff9f43; color: white; }
+        .blood-o-minus { background-color: #feca57; color: white; }
+        
+        /* Request List */
+        .request-card {
+            transition: all 0.3s ease;
+        }
+        
+        .request-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Details Page */
+        .detail-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        /* Loading States */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#" data-page="home">
+                <i class="fas fa-tint me-2"></i>BloodClan
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-page="home">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="create">
+                            <i class="fas fa-plus me-1"></i>Create Request
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="requests">
+                            <i class="fas fa-list me-1"></i>View Requests
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <!-- Flash messages -->
+        <div id="flash-messages"></div>
+        
+        <!-- Home Page -->
+        <div id="home-page" class="page-section active">
+            <!-- Hero Section -->
+            <div class="hero mb-5 fade-in">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <i class="fas fa-tint me-3"></i>BloodClan
+                    </h1>
+                    <p class="lead mb-4">Connecting blood donors with those in urgent need through AI technology</p>
+                    <p class="mb-4">Use our AI-powered fingerprint analysis to verify your blood group and help save lives in your community.</p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="#" class="btn btn-light btn-lg" data-page="create">
+                            <i class="fas fa-plus me-2"></i>Request Blood
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-lg" data-page="requests">
+                            <i class="fas fa-search me-2"></i>Find Requests
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="row mb-5">
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-fingerprint"></i>
+                            </div>
+                            <h4 class="card-title">AI Blood Group Detection</h4>
+                            <p class="card-text">Upload a fingerprint image and our AI will predict your blood group with high accuracy.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h4 class="card-title">Location-Based Matching</h4>
+                            <p class="card-text">Find blood requests near you and connect with donors in your area quickly.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h4 class="card-title">Real-Time Notifications</h4>
+                            <p class="card-text">Get instant updates when someone needs your blood type in your vicinity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h2 class="text-center mb-4">Quick Actions</h2>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-exclamation-circle me-2"></i>Need Blood Urgently?
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Create a request and connect with verified donors in your area.</p>
+                            <a href="#" class="btn btn-danger" data-page="create">
+                                <i class="fas fa-plus me-2"></i>Create Blood Request
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-heart me-2"></i>Want to Donate?
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Check your blood group and find people who need your help.</p>
+                            <a href="#" class="btn btn-success" data-page="requests">
+                                <i class="fas fa-search me-2"></i>Find Donation Opportunities
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Group Information -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Blood Group Compatibility
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Universal Donors & Recipients</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <span class="blood-badge blood-o-minus me-2">O-</span> Universal donor (can donate to all)
+                                        </li>
+                                        <li class="list-group-item">
+                                            <span class="blood-badge blood-ab-plus me-2">AB+</span> Universal recipient (can receive from all)
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>How Our AI Works</h5>
+                                    <p class="small">Our machine learning model analyzes fingerprint patterns to predict blood groups with over 85% accuracy. Upload a clear fingerprint image for best results.</p>
+                                    <div class="text-center mt-3">
+                                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#fingerprintModal">
+                                            <i class="fas fa-fingerprint me-2"></i>Try Fingerprint Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Request Page -->
+        <div id="create-page" class="page-section">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-danger text-white">
+                            <h3 class="mb-0">
+                                <i class="fas fa-plus me-2"></i>Create Blood Request
+                            </h3>
+                            <small>Fill in the details to request blood donation</small>
+                        </div>
+                        <div class="card-body">
+                            <form id="createRequestForm">
+                                <!-- Basic Information -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-12">
+                                        <h5 class="text-primary">
+                                            <i class="fas fa-info-circle me-2"></i>Request Information
+                                        </h5>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="title" class="form-label">Request Title *</label>
+                                        <input type="text" class="form-control" id="title" placeholder="e.g., Urgent blood needed for surgery" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bloodGroup" class="form-label">Blood Group Needed *</label>
+                                        <select class="form-select" id="bloodGroup" required>
+                                            <option value="">Select Blood Group</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="unitsNeeded" class="form-label">Units Required</label>
+                                        <input type="number" class="form-control" id="unitsNeeded" min="1" max="10" value="1">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="description" class="form-label">Additional Details</label>
+                                        <textarea class="form-control" id="description" rows="3" placeholder="Please provide any additional information (medical condition, urgency level, etc.)"></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="expiresAt" class="form-label">Request Expires On (Optional)</label>
+                                        <input type="datetime-local" class="form-control" id="expiresAt">
+                                    </div>
+                                </div>
+
+                                <!-- Contact Information -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-12">
+                                        <h5 class="text-primary">
+                                            <i class="fas fa-phone me-2"></i>Contact Information
+                                        </h5>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="contactName" class="form-label">Contact Person Name *</label>
+                                        <input type="text" class="form-control" id="contactName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="contactPhone" class="form-label">Phone Number *</label>
+                                        <input type="tel" class="form-control" id="contactPhone" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="contactEmail" class="form-label">Email Address (Optional)</label>
+                                        <input type="email" class="form-control" id="contactEmail">
+                                    </div>
+                                </div>
+
+                                <!-- Location Information -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-12">
+                                        <h5 class="text-primary">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Location Information
+                                        </h5>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="address" class="form-label">Hospital/Address *</label>
+                                        <input type="text" class="form-control" id="address" placeholder="Hospital name and address" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="latitude" class="form-label">Latitude (Optional)</label>
+                                        <input type="number" class="form-control" id="latitude" step="any" placeholder="e.g., 12.9716">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="longitude" class="form-label">Longitude (Optional)</label>
+                                        <input type="number" class="form-control" id="longitude" step="any" placeholder="e.g., 77.5946">
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="button" id="getCurrentLocation" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-crosshairs me-2"></i>Use My Current Location
+                                        </button>
+                                        <small class="form-text text-muted ms-2">
+                                            Adding location helps donors find you faster
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Terms and Submit -->
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                            <label class="form-check-label" for="agreeTerms">
+                                                I agree to share my contact information with potential donors and understand that this is for emergency medical purposes only.
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a href="#" class="btn btn-outline-secondary" data-page="home">
+                                                <i class="fas fa-times me-2"></i>Cancel
+                                            </a>
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-plus me-2"></i>Create Request
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div id="messageContainer" class="mt-3"></div>
+        </div>
+
+        <!-- Requests List Page -->
+        <div id="requests-page" class="page-section">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>
+                            <i class="fas fa-list me-2"></i>Blood Requests
+                        </h2>
+                        <a href="#" class="btn btn-danger" data-page="create">
+                            <i class="fas fa-plus me-2"></i>Create Request
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-filter me-2"></i>Filter Requests
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="filterBloodGroup" class="form-label">Blood Group</label>
+                                    <select class="form-select" id="filterBloodGroup">
+                                        <option value="">All Blood Groups</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="radiusKm" class="form-label">Radius (km)</label>
+                                    <select class="form-select" id="radiusKm">
+                                        <option value="5">5 km</option>
+                                        <option value="10">10 km</option>
+                                        <option value="15" selected>15 km</option>
+                                        <option value="25">25 km</option>
+                                        <option value="50">50 km</option>
+                                        <option value="100">100 km</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Your Location (for distance)</label>
+                                    <div class="input-group">
+                                        <button type="button" id="getLocationBtn" class="btn btn-outline-primary">
+                                            <i class="fas fa-crosshairs me-2"></i>Use My Location
+                                        </button>
+                                        <input type="text" class="form-control" id="locationDisplay" placeholder="Location not set" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" id="applyFilters" class="btn btn-primary w-100">
+                                        <i class="fas fa-search me-2"></i>Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="text-center d-none">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading requests...</p>
+            </div>
+
+            <!-- Requests List -->
+            <div id="requestsList">
+                <div class="row" id="requestsContainer">
+                    <!-- Requests will be loaded here dynamically -->
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div id="paginationContainer" class="d-flex justify-content-center mt-4">
+                <!-- Pagination will be loaded here -->
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResultsMessage" class="text-center py-5 d-none">
+                <div class="text-muted">
+                    <i class="fas fa-search fa-3x mb-3"></i>
+                    <h4>No Blood Requests Found</h4>
+                    <p>Try adjusting your filters or check back later for new requests.</p>
+                    <a href="#" class="btn btn-danger mt-3" data-page="create">
+                        <i class="fas fa-plus me-2"></i>Create a Request
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Details Page -->
+        <div id="details-page" class="page-section">
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="card shadow">
+                        <div class="detail-header d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0 text-white">
+                                <i class="fas fa-tint me-2"></i>
+                                Request Details
+                            </h4>
+                            <span class="badge bg-light text-dark">ID: <span id="request-id">BL-4826</span></span>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title" id="request-title">Urgent need for surgery patient</h3>
+                            <p class="card-text" id="request-description">My father needs blood for heart surgery tomorrow. Please help! He has been diagnosed with coronary artery disease and needs a triple bypass surgery. We need A+ blood to ensure we have enough supply for the procedure and recovery.</p>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <strong>Blood Group Needed:</strong>
+                                    <span class="blood-badge ms-2" id="request-blood-group">A+</span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Units Required:</strong>
+                                    <span class="text-danger fw-bold" id="request-units">3</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <strong>Location:</strong><br>
+                                    <i class="fas fa-map-marker-alt text-muted me-1"></i>
+                                    <span id="request-address">City General Hospital, 123 Medical Drive, Downtown</span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Posted:</strong><br>
+                                    <i class="fas fa-clock text-muted me-1"></i>
+                                    <span id="request-created">October 15, 2023 at 2:30 PM</span>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-warning" id="request-expiry">
+                                <i class="fas fa-hourglass-half me-2"></i>
+                                <strong>Expires:</strong> October 17, 2023 at 2:30 PM
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Donor Registration Section -->
+                    <div class="card shadow mt-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-hand-holding-medical me-2"></i>
+                                Become a Donor
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                First, check your blood group using our AI fingerprint detection, then register as a donor if you're compatible.
+                            </div>
+                            
+                            <!-- Fingerprint Upload -->
+                            <div class="upload-area mb-3" id="donate-upload-area">
+                                <div class="upload-placeholder" id="donate-upload-placeholder">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-fingerprint"></i>
+                                    </div>
+                                    <p class="mb-2">Upload fingerprint to verify blood group</p>
+                                    <p class="text-muted small">or</p>
+                                    <button class="btn btn-outline-success" id="selectDonateFile">
+                                        <i class="fas fa-image me-2"></i>Select Fingerprint
+                                    </button>
+                                </div>
+                                <div class="image-preview d-none" id="donate-image-preview">
+                                    <img src="" alt="Preview" class="img-fluid mb-3 rounded" id="donate-preview-img">
+                                    <div>
+                                        <button class="btn btn-success me-2" id="predictDonateBtn">
+                                            <i class="fas fa-brain me-2"></i>Verify Blood Group
+                                        </button>
+                                        <button class="btn btn-secondary" id="clearDonateBtn">Clear</button>
+                                    </div>
+                                </div>
+                                <input type="file" id="donateFingerprint" class="d-none" accept="image/*">
+                            </div>
+                            
+                            <div id="donateResult" class="mb-3"></div>
+                            
+                            <!-- Donor Registration Form -->
+                            <form id="donorForm" class="d-none">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Your Name *</label>
+                                        <input type="text" id="donorName" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Contact (Phone/Email) *</label>
+                                        <input type="text" id="donorContact" class="form-control" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="donorConsent" required>
+                                            <label class="form-check-label" for="donorConsent">
+                                                I consent to share my contact information with the blood requester.
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-heart me-2"></i>Register as Donor
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Contact Information -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-phone me-2"></i>
+                                Contact Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Contact Person:</strong><br>
+                                <i class="fas fa-user text-muted me-1"></i>
+                                <span id="contact-name">Rahul Sharma</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Phone:</strong><br>
+                                <i class="fas fa-phone text-muted me-1"></i>
+                                <a href="#" id="contact-phone" class="text-decoration-none">
+                                    +91 98765 43210
+                                </a>
+                            </div>
+                            <div class="mb-3" id="contact-email-container">
+                                <strong>Email:</strong><br>
+                                <i class="fas fa-envelope text-muted me-1"></i>
+                                <a href="#" id="contact-email" class="text-decoration-none">
+                                    rahul.sharma@example.com
+                                </a>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="#" id="call-btn" class="btn btn-danger">
+                                    <i class="fas fa-phone me-2"></i>Call Now
+                                </a>
+                                <a href="#" id="email-btn" class="btn btn-outline-primary">
+                                    <i class="fas fa-envelope me-2"></i>Send Email
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Registered Donors -->
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users me-2"></i>
+                                Registered Donors (<span id="donor-count">2</span>)
+                            </h5>
+                        </div>
+                        <div class="card-body" id="donors-list">
+                            <!-- Donors will be loaded here dynamically -->
+                            <div class="text-center text-muted py-3">
+                                <i class="fas fa-user-plus fa-2x mb-2"></i>
+                                <p>No donors registered yet.<br>Be the first to help!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <a href="#" class="btn btn-outline-secondary" data-page="requests">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Requests
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Fingerprint Modal -->
+    <div class="modal fade" id="fingerprintModal" tabindex="-1" aria-labelledby="fingerprintModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fingerprintModalLabel">
+                        <i class="fas fa-fingerprint me-2"></i>Fingerprint Blood Type Analysis
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="upload-area mb-4" id="modal-upload-area">
+                                <div class="upload-placeholder" id="modal-upload-placeholder">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <p class="mb-2">Drag & drop fingerprint image here</p>
+                                    <p class="text-muted small">or</p>
+                                    <button class="btn btn-primary" id="selectModalFile">
+                                        <i class="fas fa-image me-2"></i>Select Image
+                                    </button>
+                                </div>
+                                <div class="image-preview d-none" id="modal-image-preview">
+                                    <img src="" alt="Preview" class="img-fluid mb-3 rounded" id="modal-preview-img">
+                                    <div>
+                                        <button class="btn btn-success me-2" id="predictModalBtn">
+                                            <i class="fas fa-brain me-2"></i>Analyze
+                                        </button>
+                                        <button class="btn btn-secondary" id="clearModalBtn">Clear</button>
+                                    </div>
+                                </div>
+                                <input type="file" id="modalFingerprint" class="d-none" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Analysis Results</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center py-4" id="modal-no-result">
+                                        <i class="fas fa-microscope fa-2x text-muted mb-3"></i>
+                                        <p class="text-muted">Upload a fingerprint image to begin analysis</p>
+                                    </div>
+                                    <div class="analysis-result d-none" id="modal-result">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">Blood Type: <span class="blood-type" id="modal-blood-type">O+</span></h5>
+                                            <span class="badge bg-success" id="modal-confidence">85% Confidence</span>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar bg-success" role="progressbar" id="modal-progress-bar" style="width: 85%"></div>
+                                        </div>
+                                        <div class="compatibility-info">
+                                            <h6>Compatibility:</h6>
+                                            <div class="d-flex flex-wrap gap-2" id="modal-compatibility">
+                                                <span class="blood-badge blood-a-plus">A+</span>
+                                                <span class="blood-badge blood-b-plus">B+</span>
+                                                <span class="blood-badge blood-ab-plus">AB+</span>
+                                                <span class="blood-badge blood-o-plus">O+</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-lightbulb me-2"></i>Tips for Best Results:</h6>
+                                    <ul class="mb-0 small">
+                                        <li>Use a high-quality image with good lighting</li>
+                                        <li>Ensure the fingerprint is centered and clearly visible</li>
+                                        <li>Avoid blurry or distorted images</li>
+                                        <li>For best accuracy, use images from medical-grade scanners</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary d-none" id="saveResultsBtn">Save Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h5 class="mb-3">
+                        <i class="fas fa-tint me-2"></i>BloodClan
+                    </h5>
+                    <p class="mb-0">Connecting donors with those in need through technology.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="social-links mb-3">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <div>
+                        <span class="me-3">
+                            <i class="fas fa-phone-alt me-1"></i> Emergency: 108
+                        </span>
+                        <span>
+                            <i class="fas fa-ambulance me-1"></i> Ambulance: 102
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 BloodClan. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white me-3">Privacy Policy</a>
+                    <a href="#" class="text-white me-3">Terms of Service</a>
+                    <a href="#" class="text-white">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API Configuration
+        const API_BASE = window.location.origin;
+        const API_ENDPOINTS = {
+            REQUESTS: `${API_BASE}/api/requests`,
+            PREDICT: `${API_BASE}/api/model/predict`,
+            HEALTH: `${API_BASE}/api/model/health`
+        };
+
+        // Global variables
+        let currentPage = 1;
+        let userLat = null;
+        let userLng = null;
+        let currentRequestId = null;
+        let currentPrediction = null;
+
+        // Enhanced Main JavaScript
+        $(document).ready(function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Page navigation
+            $('[data-page]').on('click', function(e) {
+                e.preventDefault();
+                const page = $(this).data('page');
+                showPage(page);
+                
+                // Load data for specific pages
+                if (page === 'requests') {
+                    loadRequests();
+                }
+            });
+
+            // Initialize fingerprint functionality
+            initFingerprintUpload();
+            
+            // Initialize form submission
+            initForms();
+            
+            // Initialize location buttons
+            initLocationButtons();
+            
+            // Initialize filters
+            initFilters();
+            
+            // Check API health on load
+            checkApiHealth();
+        });
+
+        // Page Navigation
+        function showPage(page) {
+            // Hide all pages
+            $('.page-section').removeClass('active');
+            
+            // Show selected page
+            $(`#${page}-page`).addClass('active');
+            
+            // Update navigation active state
+            $('.nav-link').removeClass('active');
+            $(`.nav-link[data-page="${page}"]`).addClass('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Show request details page
+        function showRequestDetails(requestId) {
+            currentRequestId = requestId;
+            loadRequestDetails(requestId);
+            showPage('details');
+        }
+
+        // API Health Check
+        function checkApiHealth() {
+            $.ajax({
+                url: API_ENDPOINTS.HEALTH,
+                method: 'GET',
+                success: function(response) {
+                    console.log('API Health:', response.status);
+                },
+                error: function() {
+                    console.warn('API health check failed');
+                }
+            });
+        }
+
+        // Load requests from API
+        function loadRequests() {
+            $('#loadingSpinner').removeClass('d-none');
+            $('#requestsList').addClass('d-none');
+            $('#noResultsMessage').addClass('d-none');
+
+            const params = new URLSearchParams({
+                page: currentPage,
+                per_page: 12
+            });
+
+            // Add filters
+            const bloodGroup = $('#filterBloodGroup').val();
+            if (bloodGroup) params.append('blood_group', bloodGroup);
+
+            if (userLat && userLng) {
+                params.append('lat', userLat);
+                params.append('lng', userLng);
+                params.append('radius_km', $('#radiusKm').val());
+            }
+
+            $.ajax({
+                url: `${API_ENDPOINTS.REQUESTS}?${params.toString()}`,
+                method: 'GET',
+                success: function(response) {
+                    displayRequests(response);
+                    displayPagination(response);
+                },
+                error: function(xhr) {
+                    $('#requestsContainer').html(`
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Error loading requests. Please try again.
+                            </div>
+                        </div>
+                    `);
+                },
+                complete: function() {
+                    $('#loadingSpinner').addClass('d-none');
+                }
+            });
+        }
+
+        // Display requests in the UI
+        function displayRequests(response) {
+            const requests = response.requests;
+            const container = $('#requestsContainer');
+            container.empty();
+            
+            if (requests.length === 0) {
+                $('#noResultsMessage').removeClass('d-none');
+                return;
+            }
+
+            requests.forEach(function(request) {
+                const createdDate = new Date(request.created_at).toLocaleDateString();
+                const expiresDate = request.expires_at ? new Date(request.expires_at).toLocaleDateString() : null;
+                const distanceText = request.distance_km ? `${request.distance_km} km away` : '';
+
+                const bloodGroupClass = `blood-${request.blood_group.toLowerCase()}`;
+                
+                container.append(`
+                    <div class="col-lg-6 col-xl-4 mb-4">
+                        <div class="card request-card h-100 shadow-sm">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <span class="blood-badge ${bloodGroupClass}">${request.blood_group}</span>
+                                <small class="text-muted">${createdDate}</small>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">${request.title}</h5>
+                                <p class="card-text text-truncate" style="max-height: 3em; overflow: hidden;">
+                                    ${request.description || 'No additional details provided.'}
+                                </p>
+                                
+                                <div class="row text-center mb-3">
+                                    <div class="col-6">
+                                        <div class="text-muted small">Units Needed</div>
+                                        <div class="fw-bold text-danger">${request.units_needed}</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">Donors</div>
+                                        <div class="fw-bold text-success">${request.donor_count}</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                    <small>${request.address}</small>
+                                    ${distanceText ? `<br><small class="text-primary">${distanceText}</small>` : ''}
+                                </div>
+
+                                <div class="mb-3">
+                                    <i class="fas fa-user text-muted me-2"></i>
+                                    <small>${request.contact_name}</small>
+                                </div>
+
+                                ${request.expires_at ? `
+                                    <div class="alert alert-warning py-2 mb-3">
+                                        <small><i class="fas fa-clock me-1"></i>Expires: ${expiresDate}</small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-grid">
+                                    <button class="btn btn-outline-primary btn-sm view-details-btn" data-id="${request.id}">
+                                        <i class="fas fa-eye me-2"></i>View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Add event listeners to view details buttons
+            $('.view-details-btn').on('click', function() {
+                const requestId = $(this).data('id');
+                showRequestDetails(requestId);
+            });
+
+            $('#requestsList').removeClass('d-none');
+        }
+
+        // Load request details
+        function loadRequestDetails(requestId) {
+            $.ajax({
+                url: `${API_ENDPOINTS.REQUESTS}/${requestId}`,
+                method: 'GET',
+                success: function(request) {
+                    displayRequestDetails(request);
+                },
+                error: function() {
+                    showErrorMessage('Failed to load request details');
+                    showPage('requests');
+                }
+            });
+        }
+
+        // Display request details
+        function displayRequestDetails(request) {
+            // Update basic info
+            $('#request-id').text(`BL-${request.id}`);
+            $('#request-title').text(request.title);
+            $('#request-description').text(request.description || 'No additional details provided.');
+            $('#request-blood-group').text(request.blood_group).addClass(`blood-${request.blood_group.toLowerCase()}`);
+            $('#request-units').text(request.units_needed);
+            $('#request-address').text(request.address);
+            
+            // Format dates
+            const createdDate = new Date(request.created_at);
+            $('#request-created').text(createdDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }));
+            
+            if (request.expires_at) {
+                const expiresDate = new Date(request.expires_at);
+                $('#request-expiry').html(`
+                    <i class="fas fa-hourglass-half me-2"></i>
+                    <strong>Expires:</strong> ${expiresDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}
+                `).removeClass('d-none');
+            } else {
+                $('#request-expiry').addClass('d-none');
+            }
+            
+            // Update contact info
+            $('#contact-name').text(request.contact_name);
+            $('#contact-phone').text(request.contact_phone).attr('href', `tel:${request.contact_phone}`);
+            $('#call-btn').attr('href', `tel:${request.contact_phone}`);
+            
+            if (request.contact_email) {
+                $('#contact-email').text(request.contact_email).attr('href', `mailto:${request.contact_email}`);
+                $('#email-btn').attr('href', `mailto:${request.contact_email}`);
+                $('#contact-email-container').removeClass('d-none');
+            } else {
+                $('#contact-email-container').addClass('d-none');
+            }
+            
+            // Load donors
+            loadDonors(request.id);
+        }
+
+        // Load donors for a request
+        function loadDonors(requestId) {
+            // In a real implementation, you would fetch donors from the API
+            // For now, we'll simulate it
+            $('#donor-count').text('0');
+            $('#donors-list').html(`
+                <div class="text-center text-muted py-3">
+                    <i class="fas fa-user-plus fa-2x mb-2"></i>
+                    <p>No donors registered yet.<br>Be the first to help!</p>
+                </div>
+            `);
+        }
+
+        // Display pagination
+        function displayPagination(response) {
+            const totalPages = Math.ceil(response.total / response.per_page);
+            const container = $('#paginationContainer');
+            container.empty();
+            
+            if (totalPages <= 1) {
+                return;
+            }
+
+            let paginationHtml = '<nav><ul class="pagination">';
+            
+            // Previous button
+            if (currentPage > 1) {
+                paginationHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" data-page="${currentPage - 1}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                `;
+            }
+
+            // Page numbers
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                paginationHtml += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                paginationHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" data-page="${currentPage + 1}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                `;
+            }
+
+            paginationHtml += '</ul></nav>';
+            container.html(paginationHtml);
+            
+            // Add event listeners to pagination buttons
+            container.find('.page-link').on('click', function(e) {
+                e.preventDefault();
+                const page = $(this).data('page');
+                if (page) {
+                    currentPage = page;
+                    loadRequests();
+                    $('html, body').animate({ scrollTop: 0 }, 300);
+                }
+            });
+        }
+
+        // Fingerprint Upload Functionality
+        function initFingerprintUpload() {
+            // Initialize all upload areas
+            initUploadArea('modal');
+            initUploadArea('donate');
+            
+            // Set up file input triggers
+            $('#selectModalFile').on('click', function() {
+                $('#modalFingerprint').click();
+            });
+            
+            $('#selectDonateFile').on('click', function() {
+                $('#donateFingerprint').click();
+            });
+            
+            // Set up clear buttons
+            $('#clearModalBtn').on('click', function() {
+                clearUploadArea('modal');
+            });
+            
+            $('#clearDonateBtn').on('click', function() {
+                clearUploadArea('donate');
+            });
+            
+            // Set up predict buttons
+            $('#predictModalBtn').on('click', function() {
+                predictBloodGroup('modal');
+            });
+            
+            $('#predictDonateBtn').on('click', function() {
+                predictBloodGroup('donate');
+            });
+        }
+
+        // Initialize an upload area
+        function initUploadArea(prefix) {
+            const uploadArea = $(`#${prefix}-upload-area`);
+            const fileInput = $(`#${prefix}Fingerprint`);
+            const placeholder = $(`#${prefix}-upload-placeholder`);
+            const preview = $(`#${prefix}-image-preview`);
+            const previewImg = $(`#${prefix}-preview-img`);
+            
+            // Click to select file
+            uploadArea.on('click', function(e) {
+                if (!$(e.target).is('button')) {
+                    fileInput.click();
+                }
+            });
+            
+            // File selection handler
+            fileInput.on('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    
+                    // Validate file type
+                    if (!file.type.match('image.*')) {
+                        showErrorMessage('Please select an image file');
+                        return;
+                    }
+                    
+                    // Validate file size
+                    if (file.size > 5 * 1024 * 1024) {
+                        showErrorMessage('File size must be less than 5MB');
+                        return;
+                    }
+                    
+                    // Preview image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        placeholder.addClass('d-none');
+                        preview.removeClass('d-none');
+                        previewImg.attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Drag and drop functionality
+            uploadArea.on('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.addClass('dragover');
+            });
+            
+            uploadArea.on('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.removeClass('dragover');
+            });
+            
+            uploadArea.on('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.removeClass('dragover');
+                
+                const files = e.originalEvent.dataTransfer.files;
+                if (files.length) {
+                    fileInput[0].files = files;
+                    fileInput.trigger('change');
+                }
+            });
+        }
+
+        // Clear an upload area
+        function clearUploadArea(prefix) {
+            $(`#${prefix}Fingerprint`).val('');
+            $(`#${prefix}-upload-placeholder`).removeClass('d-none');
+            $(`#${prefix}-image-preview`).addClass('d-none');
+            
+            if (prefix === 'modal') {
+                $('#modal-result').addClass('d-none');
+                $('#modal-no-result').removeClass('d-none');
+                $('#saveResultsBtn').addClass('d-none');
+            } else {
+                $('#donateResult').empty();
+                $('#donorForm').addClass('d-none');
+            }
+        }
+
+        // Predict blood group from fingerprint
+        function predictBloodGroup(prefix) {
+            const fileInput = $(`#${prefix}Fingerprint`)[0];
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showErrorMessage('Please select a fingerprint image first');
+                return;
+            }
+            
+            const predictBtn = $(`#predict${prefix.charAt(0).toUpperCase() + prefix.slice(1)}Btn`);
+            const originalText = predictBtn.html();
+            predictBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...');
+            
+            const formData = new FormData();
+            formData.append('fingerprint', file);
+            
+            $.ajax({
+                url: API_ENDPOINTS.PREDICT,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    displayPredictionResult(response, prefix);
+                    predictBtn.html(originalText);
+                },
+                error: function(xhr) {
+                    let errorMessage = 'Error analyzing fingerprint. Please try again.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    }
+                    showErrorMessage(errorMessage);
+                    predictBtn.html(originalText);
+                }
+            });
+        }
+
+        // Display prediction result
+        function displayPredictionResult(response, prefix) {
+            currentPrediction = response;
+            const confidencePercent = (response.confidence * 100).toFixed(1);
+            
+            if (prefix === 'modal') {
+                $('#modal-no-result').addClass('d-none');
+                $('#modal-result').removeClass('d-none');
+                $('#modal-blood-type').text(response.predicted_group);
+                $('#modal-confidence').text(`${confidencePercent}% Confidence`);
+                $('#modal-progress-bar').css('width', `${confidencePercent}%`);
+                
+                // Generate compatibility info
+                const compatibility = getBloodCompatibility(response.predicted_group);
+                $('#modal-compatibility').empty();
+                compatibility.canDonateTo.forEach(group => {
+                    $('#modal-compatibility').append(
+                        `<span class="blood-badge blood-${group.toLowerCase()}">${group}</span>`
+                    );
+                });
+                
+                $('#saveResultsBtn').removeClass('d-none');
+            } else {
+                // For donation page
+                const requiredGroup = $('#request-blood-group').text();
+                const isCompatible = isBloodCompatible(response.predicted_group, requiredGroup);
+                
+                let resultHtml = `
+                    <div class="alert ${response.allowed_to_donate ? 'alert-success' : 'alert-warning'}">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-${response.allowed_to_donate ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                            Analysis Result
+                        </h6>
+                        <p><strong>Predicted Blood Group:</strong> ${response.predicted_group}</p>
+                        <p><strong>Confidence:</strong> ${confidencePercent}%</p>
+                `;
+                
+                if (response.allowed_to_donate) {
+                    if (isCompatible) {
+                        resultHtml += `<p class="mb-0 text-success"><i class="fas fa-heart me-2"></i><strong>Perfect Match! You can help this patient.</strong></p>`;
+                    } else {
+                        resultHtml += `<p class="mb-0 text-warning"><i class="fas fa-info-circle me-2"></i><strong>Blood group mismatch, but you can still register for future compatibility.</strong></p>`;
+                    }
+                } else {
+                    resultHtml += `<p class="mb-0">Confidence level too low for donation. Please try a clearer image.</p>`;
+                }
+                
+                resultHtml += `</div>`;
+                
+                $('#donateResult').html(resultHtml);
+                
+                if (response.allowed_to_donate) {
+                    $('#donorForm').removeClass('d-none');
+                    $('#donorName').focus();
+                }
+            }
+        }
+
+        // Form Initialization
+        function initForms() {
+            // Create request form
+            $('#createRequestForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Simple validation
+                let isValid = true;
+                $(this).find('[required]').each(function() {
+                    if (!$(this).val()) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+                
+                if (!isValid) {
+                    showErrorMessage('Please fill in all required fields');
+                    return;
+                }
+                
+                // Prepare form data
+                const formData = {
+                    title: $('#title').val(),
+                    blood_group: $('#bloodGroup').val(),
+                    units_needed: parseInt($('#unitsNeeded').val()) || 1,
+                    description: $('#description').val(),
+                    expires_at: $('#expiresAt').val() || null,
+                    contact_name: $('#contactName').val(),
+                    contact_phone: $('#contactPhone').val(),
+                    contact_email: $('#contactEmail').val(),
+                    address: $('#address').val(),
+                    lat: parseFloat($('#latitude').val()) || null,
+                    lng: parseFloat($('#longitude').val()) || null
+                };
+                
+                // Show loading state
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Creating Request...');
+                submitBtn.prop('disabled', true);
+                
+                // Submit to API
+                $.ajax({
+                    url: API_ENDPOINTS.REQUESTS,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        showSuccessMessage('Blood request created successfully!');
+                        $('#createRequestForm')[0].reset();
+                        
+                        // Redirect to requests page
+                        setTimeout(() => {
+                            showPage('requests');
+                            loadRequests();
+                        }, 1500);
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to create request. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        }
+                        showErrorMessage(errorMessage);
+                    },
+                    complete: function() {
+                        submitBtn.html(originalText);
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Donor registration form
+            $('#donorForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                if (!currentPrediction || !currentRequestId) {
+                    showErrorMessage('Please complete fingerprint analysis first');
+                    return;
+                }
+                
+                const donorData = {
+                    donor_name: $('#donorName').val(),
+                    donor_contact: $('#donorContact').val(),
+                    donor_blood_group: currentPrediction.predicted_group,
+                    confidence: currentPrediction.confidence
+                };
+                
+                // Show loading state
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Registering...');
+                submitBtn.prop('disabled', true);
+                
+                // Submit to API
+                $.ajax({
+                    url: `${API_ENDPOINTS.REQUESTS}/${currentRequestId}/optin`,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(donorData),
+                    success: function(response) {
+                        showSuccessMessage('Thank you for registering as a donor! The requester will contact you soon.');
+                        $('#donorForm')[0].reset();
+                        $('#donorForm').addClass('d-none');
+                        
+                        // Reload donors list
+                        loadDonors(currentRequestId);
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to register as donor. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        }
+                        showErrorMessage(errorMessage);
+                    },
+                    complete: function() {
+                        submitBtn.html(originalText);
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+        }
+
+        // Initialize location buttons
+        function initLocationButtons() {
+            // Get current location for create form
+            $('#getCurrentLocation').on('click', function() {
+                if (navigator.geolocation) {
+                    $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Getting Location...');
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            $('#latitude').val(position.coords.latitude.toFixed(6));
+                            $('#longitude').val(position.coords.longitude.toFixed(6));
+                            $('#getCurrentLocation').html('<i class="fas fa-check me-2"></i>Location Set');
+                            setTimeout(function() {
+                                $('#getCurrentLocation').html('<i class="fas fa-crosshairs me-2"></i>Use My Current Location');
+                            }, 2000);
+                        },
+                        function(error) {
+                            alert('Unable to get your location. Please enter manually.');
+                            $('#getCurrentLocation').html('<i class="fas fa-crosshairs me-2"></i>Use My Current Location');
+                        }
+                    );
+                } else {
+                    alert('Geolocation is not supported by this browser.');
+                }
+            });
+            
+            // Get current location for filters
+            $('#getLocationBtn').on('click', function() {
+                if (navigator.geolocation) {
+                    $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Getting Location...');
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            userLat = position.coords.latitude;
+                            userLng = position.coords.longitude;
+                            $('#locationDisplay').val(`${userLat.toFixed(4)}, ${userLng.toFixed(4)}`);
+                            $('#getLocationBtn').html('<i class="fas fa-check me-2"></i>Location Set');
+                            setTimeout(function() {
+                                $('#getLocationBtn').html('<i class="fas fa-crosshairs me-2"></i>Use My Location');
+                            }, 2000);
+                        },
+                        function(error) {
+                            alert('Unable to get your location.');
+                            $('#getLocationBtn').html('<i class="fas fa-crosshairs me-2"></i>Use My Location');
+                        }
+                    );
+                }
+            });
+        }
+
+        // Initialize filters
+        function initFilters() {
+            $('#applyFilters').on('click', function() {
+                currentPage = 1;
+                loadRequests();
+            });
+            
+            $('#filterBloodGroup, #radiusKm').on('change', function() {
+                currentPage = 1;
+                loadRequests();
+            });
+        }
+
+        // Blood compatibility functions
+        function getBloodCompatibility(bloodGroup) {
+            const compatibility = {
+                'O-': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                'O+': ['A+', 'B+', 'AB+', 'O+'],
+                'A-': ['A+', 'A-', 'AB+', 'AB-'],
+                'A+': ['A+', 'AB+'],
+                'B-': ['B+', 'B-', 'AB+', 'AB-'],
+                'B+': ['B+', 'AB+'],
+                'AB-': ['AB+', 'AB-'],
+                'AB+': ['AB+']
+            };
+            
+            return {
+                canDonateTo: compatibility[bloodGroup] || [],
+                canReceiveFrom: Object.keys(compatibility).filter(group => 
+                    compatibility[group].includes(bloodGroup)
+                )
+            };
+        }
+
+        function isBloodCompatible(donorGroup, recipientGroup) {
+            const compatibility = getBloodCompatibility(donorGroup);
+            return compatibility.canDonateTo.includes(recipientGroup);
+        }
+
+        // Utility Functions
+        function showSuccessMessage(message) {
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            $('#flash-messages').html(alertHtml);
+            $('html, body').animate({ scrollTop: 0 }, 300);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+
+        function showErrorMessage(message) {
+            const alertHtml = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            $('#flash-messages').html(alertHtml);
+            $('html, body').animate({ scrollTop: 0 }, 300);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
