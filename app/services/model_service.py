@@ -2,9 +2,9 @@ import os
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.imagenet_utils import preprocess_input
+from keras.models import load_model
+from keras.preprocessing import image
+from keras.applications.imagenet_utils import preprocess_input
 from flask import current_app
 import io
 import logging

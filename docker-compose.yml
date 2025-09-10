@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URI=mssql+pyodbc://sa:YourPassword123!@db:1433/BloodClan?driver=ODBC+Driver+17+for+SQL+Server
+      - SECRET_KEY=your-production-secret-key
+      - MODEL_PATH=models/model_blood_group_detection_resnet.h5
+      - PREDICT_THRESHOLD=0.65
+      - FLASK_ENV=production
+    volumes:
+      - ./uploads:/app/uploads
+      - ./models:/app/models
+    depends_on:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/model/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourPassword123!
+      - MSSQL_DB=BloodClan
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourPassword123! -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  sqlserver_data:

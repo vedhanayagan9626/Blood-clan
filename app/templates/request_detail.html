@@ -218,7 +218,7 @@
 $(document).ready(function() {
     let predictedGroup = '';
     let confidence = 0;
-    const requestId = {{ request.id }};
+    const requestId = "{{ request.id }}";
     
     const requiredGroup = '{{ request.blood_group }}';
 
@@ -330,4 +330,26 @@ $(document).ready(function() {
                 showSuccessMessage('Thank you! Your registration has been submitted. The requester will contact you soon.');
                 $('#donorForm')[0].reset();
                 $('#donorForm').addClass('d-none');
-            }})});
+            },
+            error: function() {
+                showErrorMessage('Failed to register as donor. Please try again.');
+            },
+            complete: function() {
+                // Re-enable form
+                $submitBtn.prop('disabled', false).html('Register as Donor');
+            }
+        });
+    });
+
+    function showSuccessMessage(message) {
+        $('#flash-messages').html(`
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+        $('html, body').animate({ scrollTop: 0 }, 300);
+    }
+});
+</script>
