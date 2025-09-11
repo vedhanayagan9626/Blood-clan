@@ -12,6 +12,7 @@ def create_app(config_class=Config):
     from app.models import db
     db.init_app(app)
     
+    
     # Create upload directory
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
