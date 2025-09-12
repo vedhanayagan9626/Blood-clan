@@ -10,6 +10,7 @@ class Config:
         "mssql+pymssql://hrmuser1:HRM%26%24LslWrA%23iPrUs4a%40%21GO@103.133.214.173:1433/BloodClan"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     MODEL_PATH = os.environ.get("MODEL_PATH", "models/model_blood_group_detection_resnet.h5")
     PREDICT_THRESHOLD = float(os.environ.get("PREDICT_THRESHOLD", "0.65"))
     UPLOAD_FOLDER = 'uploads'

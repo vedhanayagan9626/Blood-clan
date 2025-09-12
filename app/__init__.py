@@ -1,11 +1,18 @@
+import os
+import sys
+
+# Add the parent directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 import os
-
+from flask_cors import CORS 
 def create_app(config_class=Config):
     app = Flask(__name__)
+    CORS(app) 
     app.config.from_object(config_class)
     
     # Initialize extensions
