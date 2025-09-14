@@ -11,7 +11,25 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    MODEL_PATH = os.environ.get("MODEL_PATH", "models/model_blood_group_detection_resnet.h5")
-    PREDICT_THRESHOLD = float(os.environ.get("PREDICT_THRESHOLD", "0.65"))
+    # Model configuration
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'model_blood_group_detection_resnet.h5')
+    
+    # Optional: Add model-related settings
+    PREDICT_THRESHOLD = 0.65
+    ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'bmp', 'tiff'}
     UPLOAD_FOLDER = 'uploads'
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    # Override model path for development if needed
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'dev_model.h5')
+
+class ProductionConfig(Config):
+    DEBUG = False
+    # Production-specific model path
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'prod_model.h5')
+
+class TestingConfig(Config):
+    TESTING = True
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), 'tests', 'test_model.h5')

@@ -382,6 +382,37 @@
     z-index: 5;
 }
 
+/* Add to your existing CSS */
+.donor-item {
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.donor-item:hover {
+    background-color: #e9ecef;
+    transform: translateX(5px);
+}
+
+.contact-info {
+    font-size: 0.85rem;
+}
+
+.donor-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.status-verified {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
     </style>
   </head>
   <body>
@@ -1450,6 +1481,9 @@
         // Initialize filters
         initFilters();
 
+        // Initialize donor form
+        initDonorForm();
+
         // Check API health on load
         checkApiHealth();
       });
@@ -1660,6 +1694,8 @@
           method: "GET",
           success: function (request) {
             displayRequestDetails(request);
+            // Also load donors for this request
+            loadDonors(requestId);
           },
           error: function () {
             showErrorMessage("Failed to load request details");
@@ -1738,18 +1774,127 @@
         loadDonors(request.id);
       }
 
-      // Load donors for a request
-      function loadDonors(requestId) {
-        // In a real implementation, you would fetch donors from the API
-        // For now, we'll simulate it
-        $("#donor-count").text("0");
-        $("#donors-list").html(`
-                <div class="text-center text-muted py-3">
-                    <i class="fas fa-user-plus fa-2x mb-2"></i>
-                    <p>No donors registered yet.<br>Be the first to help!</p>
+// Handle donor registration form submission
+function handleDonorRegistration(e) {
+    e.preventDefault();
+    
+    if (!currentPrediction || !currentRequestId) {
+        showErrorMessage("Please complete fingerprint analysis first");
+        return;
+    }
+
+    const donorData = {
+        donor_name: $("#donorName").val(),
+        donor_contact: $("#donorContact").val(),
+        donor_blood_group: currentPrediction.predicted_group,
+        confidence: currentPrediction.confidence,
+    };
+
+    // Show loading state
+    const submitBtn = $(this).find('button[type="submit"]');
+    const originalText = submitBtn.html();
+    submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Registering...');
+    submitBtn.prop("disabled", true);
+
+    // Submit to API
+    $.ajax({
+        url: `${API_ENDPOINTS.REQUESTS}/${currentRequestId}/optin`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(donorData),
+        success: function(response) {
+            showSuccessMessage(
+                "Thank you for registering as a donor! The requester will contact you soon."
+            );
+            $("#donorForm")[0].reset();
+            $("#donorForm").addClass("d-none");
+
+            // Reload donors list
+            loadDonors(currentRequestId);
+        },
+        error: function(xhr) {
+            let errorMessage =
+                "Failed to register as donor. Please try again.";
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMessage = xhr.responseJSON.error;
+            }
+            showErrorMessage(errorMessage);
+        },
+        complete: function() {
+            submitBtn.html(originalText);
+            submitBtn.prop("disabled", false);
+        }
+    });
+}
+
+// Load donors for a specific request
+function loadDonors(requestId) {
+    $.ajax({
+        url: `${API_ENDPOINTS.REQUESTS}/${requestId}/donors`,
+        method: "GET",
+        success: function(response) {
+            displayDonors(response.donors);
+        },
+        error: function(xhr) {
+            console.error("Failed to load donors:", xhr);
+            // Show empty state
+            displayDonors([]);
+        }
+    });
+}
+
+// Display donors in the UI
+function displayDonors(donors) {
+    const donorsList = $("#donors-list");
+    const donorCount = $("#donor-count");
+    
+    donorCount.text(donors.length);
+    
+    if (donors.length === 0) {
+        donorsList.html(`
+            <div class="text-center text-muted py-3">
+                <i class="fas fa-user-plus fa-2x mb-2"></i>
+                <p>No donors registered yet.<br>Be the first to help!</p>
+            </div>
+        `);
+        return;
+    }
+    
+    let donorsHtml = '';
+    
+    donors.forEach(function(donor) {
+        const createdDate = new Date(donor.created_at).toLocaleDateString();
+        const confidencePercent = (donor.prediction_confidence * 100).toFixed(0);
+        const bloodGroupClass = `blood-${donor.donor_blood_group.toLowerCase()}`;
+        
+        donorsHtml += `
+            <div class="donor-item mb-3 p-3 border rounded">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">${donor.donor_name}</h6>
+                        <div class="d-flex align-items-center mb-1">
+                            <span class="blood-badge ${bloodGroupClass} me-2">${donor.donor_blood_group}</span>
+                            <small class="text-muted">${confidencePercent}% confidence</small>
+                        </div>
+                        <div class="contact-info">
+                            <small><i class="fas fa-phone text-muted me-1"></i>${donor.donor_contact}</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">${createdDate}</small>
+                    </div>
                 </div>
-            `);
-      }
+            </div>
+        `;
+    });
+    
+    donorsList.html(donorsHtml);
+}
+
+// Initialize donor form
+function initDonorForm() {
+    $("#donorForm").on("submit", handleDonorRegistration);
+}
 
       // Display pagination
       function displayPagination(response) {

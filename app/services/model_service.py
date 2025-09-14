@@ -17,7 +17,7 @@ def predict_from_image(image_bytes):
         image_data_base64 = base64.b64encode(image_bytes).decode('utf-8')
         
         # Path to your standalone prediction script
-        script_path = os.path.join(os.path.dirname(__file__), 'predict_standalone.py')
+        script_path = os.path.join(os.path.dirname(__file__), 'standalone_predictor.py')
         
         # Run the prediction script as a subprocess
         result = subprocess.run(

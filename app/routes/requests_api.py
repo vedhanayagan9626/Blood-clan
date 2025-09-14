@@ -154,3 +154,21 @@ def donor_optin(req_id):
         db.session.rollback()
         current_app.logger.error(f"Error in donor opt-in for request {req_id}: {str(e)}")
         return jsonify({'error': 'Failed to register as donor'}), 500
+    
+@bp.route("/<int:req_id>/donors", methods=["GET"])
+def get_request_donors(req_id):
+    """Get all donors who opted in for a specific request"""
+    try:
+        # Validate request exists
+        blood_request = BloodRequest.query.get_or_404(req_id)
+        
+        # Get all donors for this request
+        donors = DonorOptIn.query.filter_by(request_id=req_id).order_by(DonorOptIn.created_at.desc()).all()
+        
+        return jsonify({
+            'donors': [donor.to_dict() for donor in donors]
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting donors for request {req_id}: {str(e)}")
+        return jsonify({'error': 'Failed to retrieve donors'}), 500

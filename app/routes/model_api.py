@@ -1,51 +1,41 @@
+import io, os
 from flask import Blueprint, request, jsonify, current_app
 from app.models import FingerprintLog, db
-import base64
-import json
-import subprocess
-import os, sys
-import tempfile
-import logging
+import numpy as np
+import matplotlib.pyplot as plt
+from keras.models import load_model
+from keras.preprocessing import image
+from keras.applications.imagenet_utils import preprocess_input
 
 bp = Blueprint("model_api", __name__, url_prefix="/api/model")
 
-def run_standalone_predictor(image_bytes):
-    """Run the standalone predictor script with the given image bytes"""
-    try:
-        # Encode image bytes to base64 for transmission
-        image_data_base64 = base64.b64encode(image_bytes).decode('utf-8')
-        
-        # Get the path to the standalone predictor script
-        script_path = os.path.join(os.path.dirname(__file__), 'standalone_predictor.py')
-        
-        # Run the prediction script as a subprocess
-        result = subprocess.run(
-            [sys.executable, script_path],
-            input=image_data_base64,
-            text=True,
-            capture_output=True,
-            timeout=30  # 30 second timeout
-        )
-        
-        if result.returncode != 0:
-            return {
-                "success": False,
-                "error": f"Subprocess failed: {result.stderr}"
-            }
-        
-        # Parse the JSON result
-        return json.loads(result.stdout)
-        
-    except subprocess.TimeoutExpired:
-        return {
-            "success": False,
-            "error": "Prediction timed out after 30 seconds"
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": f"Subprocess error: {str(e)}"
-        }
+def predict_fingerprint(file_data):
+    model_path = r"app\routes\models\model_blood_group_detection_resnet.h5"
+    if not model_path or not os.path.exists(model_path):
+        current_app.logger.error(f"Model file not found at path: {model_path}")
+        return None, None
+    
+    # Load the pre-trained model
+    model = load_model(model_path)
+
+    # Define the class labels
+    labels = {'A+': 0, 'A-': 1, 'AB+': 2, 'AB-': 3, 'B+': 4, 'B-': 5, 'O+': 6, 'O-': 7}
+    labels = dict((v, k) for k, v in labels.items())
+
+    # Load and preprocess the image
+    img = image.load_img(io.BytesIO(file_data), target_size=(256, 256))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+
+    result = model.predict(x)
+    predicted_class = np.argmax(result)
+    
+    # Map the predicted class to the label
+    predicted_group = labels[predicted_class]
+    confidence = float(result[0][predicted_class])  # Convert to regular float
+    print(f"Predicted: {predicted_group} with confidence {confidence}")
+    return predicted_group, confidence
 
 @bp.route("/predict", methods=["POST"])
 def predict():
@@ -71,19 +61,16 @@ def predict():
             return jsonify({'error': 'Empty file'}), 400
         
         # Use standalone predictor
-        prediction_result = run_standalone_predictor(file_data)
-        
-        if not prediction_result.get("success", False):
-            error_msg = prediction_result.get("error", "Unknown prediction error")
-            current_app.logger.error(f"Model prediction error: {error_msg}")
-            return jsonify({'error': f'Failed to process image: {error_msg}'}), 500
-        
-        predicted_group = prediction_result['predicted_group']
-        confidence = prediction_result['confidence']
+        predicted_group, confidence = predict_fingerprint(file_data)
+
+        if not predicted_group:
+            current_app.logger.error("Model prediction error")
+            return jsonify({'error': f'Failed to process image: {file.filename}'}), 500
         
         # Check if confidence is above threshold
         threshold = current_app.config.get('PREDICT_THRESHOLD', 0.65)
-        allowed_to_donate = confidence >= threshold
+        # Convert NumPy bool to Python bool for JSON serialization
+        allowed_to_donate = bool(confidence >= threshold)
         
         # Log the prediction
         try:
@@ -100,12 +87,12 @@ def predict():
         
         return jsonify({
             'predicted_group': predicted_group,
-            'confidence': round(confidence, 4),
+            'confidence': round(float(confidence), 4),  # Ensure it's a Python float
             'allowed_to_donate': allowed_to_donate,
-            'threshold': threshold,
+            'threshold': float(threshold),  # Ensure it's a Python float
             'model_accuracy': '99.5%',
-            'confidence_percentage': round(confidence * 100, 2),
-            'message': f'Predicted blood group: {predicted_group} with {confidence*100:.2f}% confidence'
+            'confidence_percentage': round(float(confidence) * 100, 2),
+            'message': f'Predicted blood group: {predicted_group} with {float(confidence)*100:.2f}% confidence'
         })
         
     except Exception as e:
@@ -116,12 +103,9 @@ def predict():
 def health_check():
     """Health check endpoint"""
     try:
-        # Test with a small image to check if predictor works
-        test_image = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\tpHYs\x00\x00\x0b\x13\x00\x00\x0b\x13\x01\x00\x9a\x9c\x18\x00\x00\x00\x07tIME\x07\xe5\t\x0c\x081\x0b\x93\xe8\xf7\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x00\x00\x01\x00\x01\x00\x00\r\n\xa5\x00\x00\x00\x00IEND\xaeB`\x82'
+        result = "success"
         
-        result = run_standalone_predictor(test_image)
-        
-        if result.get("success", False):
+        if result == "success":
             return jsonify({
                 'status': 'healthy', 
                 'model_loaded': True,
