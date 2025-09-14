@@ -6,6 +6,7 @@ import logging
 
 bp = Blueprint("requests_api", __name__, url_prefix="/api/requests")
 
+# List blood requests with optional filters
 @bp.route("", methods=["GET"])
 def list_requests():
     """List blood requests with optional filters"""
@@ -73,6 +74,7 @@ def list_requests():
         current_app.logger.error(f"Error listing requests: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
+# Cleanup expired requests
 @bp.route("/cleanup-expired", methods=["POST"])
 def cleanup_expired_requests():
     """Mark expired requests as closed (can be called by a cron job)"""
@@ -98,10 +100,11 @@ def cleanup_expired_requests():
         db.session.rollback()
         current_app.logger.error(f"Error cleaning up expired requests: {str(e)}")
         return jsonify({'error': 'Failed to cleanup expired requests'}), 500
-    
+
+# Create a new blood request
 @bp.route("", methods=["POST"])
 def create_request():
-    # \"\"\"Create a new blood request\"\"\"
+    """Create a new blood request"""
     try:
         data = request.get_json()
         

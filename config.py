@@ -5,10 +5,7 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-key-change-in-production")
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URI",
-        "mssql+pymssql://hrmuser1:HRM%26%24LslWrA%23iPrUs4a%40%21GO@103.133.214.173:1433/BloodClan"
-    )
+    SQLALCHEMY_DATABASE_URI = #add your database URI here os.environ.get("DATABASE_URL", "sqlite:///app.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Model configuration
