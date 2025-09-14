@@ -8,7 +8,7 @@ bp = Blueprint("requests_api", __name__, url_prefix="/api/requests")
 
 @bp.route("", methods=["GET"])
 def list_requests():
-    # \"\"\"List blood requests with optional filters\"\"\"
+    """List blood requests with optional filters"""
     try:
         # Get query parameters
         blood_group = request.args.get('blood_group', '')
@@ -18,8 +18,15 @@ def list_requests():
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         
-        # Base query - only open requests
+        # Base query - only open requests that haven't expired
         query = BloodRequest.query.filter_by(is_open=True)
+        
+        # Filter out expired requests
+        current_time = datetime.utcnow()
+        query = query.filter(
+            (BloodRequest.expires_at.is_(None)) | 
+            (BloodRequest.expires_at > current_time)
+        )
         
         # Filter by blood group if specified
         if blood_group:
@@ -44,9 +51,11 @@ def list_requests():
             
             requests_data.append(req_dict)
         
-        # Sort by distance if location provided
+        # Sort by distance if location provided, otherwise by creation date (newest first)
         if lat and lng:
             requests_data.sort(key=lambda x: x.get('distance_km', float('inf')))
+        else:
+            requests_data.sort(key=lambda x: x.get('created_at', ''), reverse=True)
         
         # Paginate manually
         start = (page - 1) * per_page
@@ -64,6 +73,32 @@ def list_requests():
         current_app.logger.error(f"Error listing requests: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
+@bp.route("/cleanup-expired", methods=["POST"])
+def cleanup_expired_requests():
+    """Mark expired requests as closed (can be called by a cron job)"""
+    try:
+        current_time = datetime.utcnow()
+        expired_requests = BloodRequest.query.filter(
+            BloodRequest.is_open == True,
+            BloodRequest.expires_at.isnot(None),
+            BloodRequest.expires_at <= current_time
+        ).all()
+        
+        for request in expired_requests:
+            request.is_open = False
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'Marked {len(expired_requests)} requests as expired',
+            'expired_count': len(expired_requests)
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error cleaning up expired requests: {str(e)}")
+        return jsonify({'error': 'Failed to cleanup expired requests'}), 500
+    
 @bp.route("", methods=["POST"])
 def create_request():
     # \"\"\"Create a new blood request\"\"\"
